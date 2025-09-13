@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gnosis — Salmos</title>
+  <style>
+    :root{
+      --blue-900: #08203a;
+      --blue-700: #0b4a6f;
+      --blue-500: #1976a5;
+      --blue-300: #6fb3d2;
+      --bg: #f6fbff;
+      --accent: var(--blue-500);
+      --text: #0b2233;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;padding:0;background:var(--bg);color:var(--text);}
+
+    .app{display:flex;min-height:100vh}
+
+    /* Sidebar */
+    .sidebar{width:250px;background:linear-gradient(180deg,var(--blue-700),var(--blue-500));color:white;padding:20px;display:flex;flex-direction:column;gap:18px}
+    .brand{font-weight:700;font-size:1.15rem}
+    nav a{display:block;padding:8px 12px;border-radius:8px;color:rgba(255,255,255,0.95);text-decoration:none}
+    nav a.active, nav a:hover{background:rgba(255,255,255,0.08)}
+
+    .lang-switch{margin-top:auto;display:flex;gap:8px}
+    .lang-switch button{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white;padding:6px 10px;border-radius:6px;cursor:pointer}
+    .lang-switch button.active{background:white;color:var(--blue-700);border-color:white}
+
+    /* Content */
+    .content{flex:1;padding:28px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .hamburger{display:none;background:var(--accent);color:white;padding:8px;border-radius:8px;border:none}
+
+    .card{background:white;border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(13,38,58,0.08);max-width:1000px}
+    h1{margin:0 0 12px 0;font-size:1.6rem;color:var(--blue-900)}
+    p.lead{margin:0 0 14px 0;color:var(--blue-900);opacity:0.9}
+
+    .contact{margin-top:18px;padding-top:12px;border-top:1px dashed #e6f3fb}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .app{flex-direction:column}
+      .sidebar{width:100%;display:none}
+      .sidebar.visible{display:flex}
+      .hamburger{display:inline-block}
+    }
+
+    /* Small tweaks */
+    footer{margin-top:18px;color:#0b223340;font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand" data-i18n="brand">Gnosis</div>
+      <nav>
+        <a href="#" data-section="home" class="active" data-i18n="home">Home</a>
+        <a href="#" data-section="salmos" data-i18n="salmos">Salmos</a>
+      </nav>
+
+      <div class="lang-switch" aria-label="Language switch">
+        <button id="btn-en" class="active">EN</button>
+        <button id="btn-es">ES</button>
+      </div>
+
+      <div style="margin-top:16px;font-size:0.9rem;opacity:0.95">
+        <div data-i18n="short_desc">A simple gnosis template — Salmos</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header>
+        <button class="hamburger" id="hambBtn">☰</button>
+        <div style="flex:1">
+          <div style="font-weight:600;"> <span data-i18n="brand">Gnosis</span> — <small data-i18n="page_name">Salmos</small></div>
+          <div style="color:var(--blue-900);opacity:0.7;font-size:0.9rem">A minimal single-page template</div>
+        </div>
+      </header>
+
+      <section id="home" class="card section" aria-label="home">
+        <h1 data-i18n="home_title">Welcome</h1>
+        <p class="lead" data-i18n="home_desc">This is a small spiritual/gnosis template. Use the menu to open the Salmos section.</p>
+      </section>
+
+      <section id="salmos" class="card section" style="display:none;margin-top:18px;" aria-label="salmos">
+        <h1 data-i18n="salmos_title">Salmos</h1>
+        <p data-i18n="salmos_content">(Here will go the Salmos content — replace this text with the real salmos.)</p>
+      </section>
+
+      <section id="contact" class="card section" style="display:none;margin-top:18px;" aria-label="contact">
+        <h1 data-i18n="contact_title">Contact</h1>
+        <p data-i18n="contact_text">Add your contact details here.</p>
+      </section>
+
+      <footer>
+        <div>© <span id="year"></span> <span data-i18n="brand">Gnosis</span>. All rights reserved.</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Simple i18n dictionary — edit as needed
+    const translations = {
+      en: {
+        brand: 'Gnosis',
+        page_name: 'Salmos',
+        home: 'Home',
+        salmos: 'Psalms',
+        contact: 'Contact',
+        short_desc: 'A simple gnosis template — Salmos',
+        home_title: 'Welcome',
+        home_desc: 'This is a small spiritual/gnosis template. Use the menu to open the Salmos section.',
+        salmos_title: 'Psalms',
+        salmos_content: 'Here will go the Salmos content. Replace this text with the real salmos in the language you prefer.',
+        contact_title: 'Contact',
+        contact_text: 'Contact section placeholder. Add your details here.'
+      },
+      es: {
+        brand: 'Gnosis',
+        page_name: 'Salmos',
+        home: 'Inicio',
+        salmos: 'Salmos',
+        contact: 'Contacto',
+        short_desc: 'Plantilla de gnosis — Salmos',
+        home_title: 'Bienvenido',
+        home_desc: 'Esta es una plantilla pequeña para temas espirituales/gnosis. Usa el menú para abrir la sección de Salmos.',
+        salmos_title: 'Salmos',
+        salmos_content: 'Aquí irá el contenido de los Salmos. Reemplaza este texto con los salmos reales en el idioma que prefieras.',
+        contact_title: 'Contacto',
+        contact_text: 'Sección de contacto. Agrega tu información aquí.'
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang){
+      currentLang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      document.getElementById('btn-en').classList.toggle('active', lang==='en');
+      document.getElementById('btn-es').classList.toggle('active', lang==='es');
+    }
+
+    // Menu handling
+    document.querySelectorAll('nav a').forEach(a=>{
+      a.addEventListener('click', e=>{
+        e.preventDefault();
+        document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));
+        a.classList.add('active');
+        const section = a.dataset.section;
+        document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+        const el = document.getElementById(section);
+        if(el) el.style.display = 'block';
+
+        // hide sidebar on mobile
+        if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('visible');
+      });
+    });
+
+    // language buttons
+    document.getElementById('btn-en').addEventListener('click', ()=>setLanguage('en'));
+    document.getElementById('btn-es').addEventListener('click', ()=>setLanguage('es'));
+
+    // hamburger for mobile
+    document.getElementById('hambBtn').addEventListener('click', ()=>{
+      document.getElementById('sidebar').classList.toggle('visible');
+    });
+
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // init
+    setLanguage('en');
+    // show home by default
+    document.getElementById('home').style.display = 'block';
+  </script>
+</body>
+</html>
