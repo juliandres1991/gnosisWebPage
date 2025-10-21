@@ -76,7 +76,7 @@
         <button class="hamburger" id="hambBtn">☰</button>
         <div style="flex:1">
           <div style="font-weight:600;"> <span data-i18n="brand">Gnosis</span> — <small data-i18n="page_name">Salmos</small></div>
-          <div style="color:var(--blue-900);opacity:0.7;font-size:0.9rem">A minimal single-page template</div>
+          <div style="color:var(--blue-900);opacity:0.7;font-size:0.9rem">“Conócete a ti mismo y conocerás el universo y a los dioses.”</div>
         </div>
       </header>
 
@@ -87,7 +87,9 @@
 
       <section id="salmos" class="card section" style="display:none;margin-top:18px;" aria-label="salmos">
         <h1 data-i18n="salmos_title">Salmos</h1>
-        <p data-i18n="salmos_content">(Here will go the Salmos content — replace this text with the real salmos.)</p>
+-        <p data-i18n="salmos_content">Salmo 34</p>
++        <!-- replace the plain <p> with a container so we can load/format the txt files -->
++        <div id="salmosContent" data-i18n="salmos_content">SALMO 24</div>
       </section>
 
       <section id="contact" class="card section" style="display:none;margin-top:18px;" aria-label="contact">
@@ -101,83 +103,111 @@
     </main>
   </div>
 
-  <script>
-    // Simple i18n dictionary — edit as needed
-    const translations = {
-      en: {
-        brand: 'Gnosis',
-        page_name: 'Salmos',
-        home: 'Home',
-        salmos: 'Psalms',
-        contact: 'Contact',
-        short_desc: 'A simple gnosis template — Salmos',
-        home_title: 'Welcome',
-        home_desc: 'This is a small spiritual/gnosis template. Use the menu to open the Salmos section.',
-        salmos_title: 'Psalms',
-        salmos_content: 'Here will go the Salmos content. Replace this text with the real salmos in the language you prefer.',
-        contact_title: 'Contact',
-        contact_text: 'Contact section placeholder. Add your details here.'
-      },
-      es: {
-        brand: 'Gnosis',
-        page_name: 'Salmos',
-        home: 'Inicio',
-        salmos: 'Salmos',
-        contact: 'Contacto',
-        short_desc: 'Plantilla de gnosis — Salmos',
-        home_title: 'Bienvenido',
-        home_desc: 'Esta es una plantilla pequeña para temas espirituales/gnosis. Usa el menú para abrir la sección de Salmos.',
-        salmos_title: 'Salmos',
-        salmos_content: 'Aquí irá el contenido de los Salmos. Reemplaza este texto con los salmos reales en el idioma que prefieras.',
-        contact_title: 'Contacto',
-        contact_text: 'Sección de contacto. Agrega tu información aquí.'
-      }
-    };
-
-    let currentLang = 'en';
-
-    function setLanguage(lang){
-      currentLang = lang;
-      document.querySelectorAll('[data-i18n]').forEach(el=>{
-        const key = el.getAttribute('data-i18n');
-        if(translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
-      });
-      document.getElementById('btn-en').classList.toggle('active', lang==='en');
-      document.getElementById('btn-es').classList.toggle('active', lang==='es');
+<script>
+  // Simple i18n dictionary — edit as needed
+  const translations = {
+    en: {
+      brand: 'Gnosis',
+      page_name: 'Salmos',
+      home: 'Home',
+      salmos: 'Psalms',
+      contact: 'Contact',
+      short_desc: 'The truth dwells within you',
+      home_title: 'Welcome',
+      home_desc: 'On this page, you will find Christian Gnostic content aimed at providing humanity with tools for the awakening and remembrance of the soul.',
+      salmos_title: 'Psalms',
+      salmos_content: 'Here will go the Salmos content. Replace this text with the real salmos in the language you prefer.',
+      contact_title: 'Contact',
+      contact_text: 'Contact section placeholder. Add your details here.'
+    },
+    es: {
+      brand: 'Gnosis',
+      page_name: 'Salmos',
+      home: 'Inicio',
+      salmos: 'Salmos',
+      contact: 'Contacto',
+      short_desc: 'La verdad habita en tu interior',
+      home_title: 'Bienvenido',
+      home_desc: 'En esta pagina encontraras contenio gnostico cristiano que pretende brindar a la humanidad herramientas para el despertar de su consciencia.',
+      salmos_title: 'Salmos',
+      salmos_content: 'Aquí irá el contenido de los Salmos. Reemplaza este texto con los salmos reales en el idioma que prefieras.',
+      contact_title: 'Contacto',
+      contact_text: 'Sección de contacto. Agrega tu información aquí.'
     }
+  };
 
-    // Menu handling
-    document.querySelectorAll('nav a').forEach(a=>{
-      a.addEventListener('click', e=>{
-        e.preventDefault();
-        document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));
-        a.classList.add('active');
-        const section = a.dataset.section;
-        document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-        const el = document.getElementById(section);
-        if(el) el.style.display = 'block';
+  let currentLang = 'en';
 
-        // hide sidebar on mobile
-        if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('visible');
-      });
+  // evita inyección al mostrar el texto del .txt
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  // carga el archivo correspondiente y lo formatea en párrafos
+  async function loadSalmos(lang){
+    const file = lang === 'es' ? 'salmos_es.txt' : 'salmos_en.txt';
+    const container = document.getElementById('salmosContent');
+    // texto de fallback mientras carga
+    container.textContent = translations[lang]?.salmos_content || '';
+    try{
+      const res = await fetch(file);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const txt = await res.text();
+      // separar por bloques (párrafos) usando líneas en blanco
+      const paragraphs = txt.split(/\r?\n\s*\r?\n/).map(p => p.trim()).filter(Boolean);
+      container.innerHTML = paragraphs.map(p => '<p>' + escapeHtml(p).replace(/\r?\n/g,'<br>') + '</p>').join('');
+    }catch(err){
+      console.warn('No se pudo cargar', file, err);
+      // deja el fallback de translations si falla
+      container.textContent = translations[lang]?.salmos_content || '';
+    }
+  }
+
+  function setLanguage(lang){
+    currentLang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      // no sobrescribir el contenedor donde insertamos el texto cargado
+      if(key === 'salmos_content') return;
+      if(translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
     });
+    document.getElementById('btn-en').classList.toggle('active', lang==='en');
+    document.getElementById('btn-es').classList.toggle('active', lang==='es');
+    // carga el archivo .txt correspondiente
+    loadSalmos(lang);
+  }
 
-    // language buttons
-    document.getElementById('btn-en').addEventListener('click', ()=>setLanguage('en'));
-    document.getElementById('btn-es').addEventListener('click', ()=>setLanguage('es'));
-
-    // hamburger for mobile
-    document.getElementById('hambBtn').addEventListener('click', ()=>{
-      document.getElementById('sidebar').classList.toggle('visible');
+  // Menu handling
+  document.querySelectorAll('nav a').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      document.querySelectorAll('nav a').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+      const section = a.dataset.section;
+      document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+      const el = document.getElementById(section);
+      if(el) el.style.display = 'block';
+      // hide sidebar on mobile
+      if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('visible');
     });
+  });
 
-    // set year
-    document.getElementById('year').textContent = new Date().getFullYear();
+  // language buttons
+  document.getElementById('btn-en').addEventListener('click', ()=>setLanguage('en'));
+  document.getElementById('btn-es').addEventListener('click', ()=>setLanguage('es'));
 
-    // init
-    setLanguage('en');
-    // show home by default
-    document.getElementById('home').style.display = 'block';
-  </script>
+  // hamburger for mobile
+  document.getElementById('hambBtn').addEventListener('click', ()=>{
+    document.getElementById('sidebar').classList.toggle('visible');
+  });
+
+  // set year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // init
+  setLanguage('en');
+  // show home by default
+  document.getElementById('home').style.display = 'block';
+</script>
 </body>
 </html>
