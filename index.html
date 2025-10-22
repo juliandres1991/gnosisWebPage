@@ -103,6 +103,9 @@
     </main>
   </div>
 
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 <script>
   // Simple i18n dictionary — edit as needed
   const translations = {
@@ -144,18 +147,19 @@
   }
 
   // carga el archivo correspondiente y lo formatea en párrafos
-  async function loadSalmos(lang){
+   async function loadSalmos(lang){
     const file = lang === 'es' ? 'salmos_es.txt' : 'salmos_en.txt';
     const container = document.getElementById('salmosContent');
+    if(!container) return;
     // texto de fallback mientras carga
     container.textContent = translations[lang]?.salmos_content || '';
     try{
       const res = await fetch(file);
       if(!res.ok) throw new Error('HTTP ' + res.status);
-      const txt = await res.text();
-      // separar por bloques (párrafos) usando líneas en blanco
-      const paragraphs = txt.split(/\r?\n\s*\r?\n/).map(p => p.trim()).filter(Boolean);
-      container.innerHTML = paragraphs.map(p => '<p>' + escapeHtml(p).replace(/\r?\n/g,'<br>') + '</p>').join('');
+      const md = await res.text();
+      // convertir Markdown a HTML y sanitizar (fallback a texto escapado si marked/DOMPurify faltan)
+      const html = (typeof marked !== 'undefined') ? marked.parse(md || '') : escapeHtml(md || '');
+      container.innerHTML = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(html) : html;
     }catch(err){
       console.warn('No se pudo cargar', file, err);
       // deja el fallback de translations si falla
