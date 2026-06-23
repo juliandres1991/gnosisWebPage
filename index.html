@@ -26,20 +26,51 @@
       font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       padding:0;
       background:
-        linear-gradient(135deg, rgba(247,241,223,0.96), rgba(237,247,244,0.95)),
-        repeating-linear-gradient(90deg, rgba(199,167,93,0.08) 0, rgba(199,167,93,0.08) 1px, transparent 1px, transparent 34px);
+        linear-gradient(135deg, rgba(247,241,223,0.90), rgba(237,247,244,0.90));
       color:var(--text);
+      overflow-x:hidden;
+      isolation:isolate;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-4vh -4vw;
+      z-index:-3;
+      background:
+        linear-gradient(90deg, rgba(38,51,95,0.48), rgba(237,247,244,0.22) 42%, rgba(255,250,240,0.50)),
+        url("assets/nature-mist-bg.png") center/cover no-repeat;
+      filter:saturate(0.82) contrast(0.92);
+      transform:scale(1.04);
+      animation:forestBreath 28s ease-in-out infinite alternate;
+      will-change:transform, filter;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(255,250,240,0.80) 0%, rgba(247,241,223,0.56) 34%, rgba(237,247,244,0.72) 100%),
+        repeating-linear-gradient(115deg, rgba(255,250,240,0.12) 0, rgba(255,250,240,0.12) 1px, transparent 1px, transparent 28px);
+      mix-blend-mode:normal;
+      animation:mistCurrent 18s linear infinite;
     }
 
-    .app{display:flex;min-height:100vh}
+    .app{display:flex;align-items:flex-start;min-height:100vh}
     body.menu-open{overflow:hidden}
 
     /* Sidebar */
     .sidebar{
       width:286px;
+      flex:0 0 286px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      height:100dvh;
       background:
-        linear-gradient(180deg, rgba(38,51,95,0.98), rgba(47,131,121,0.96)),
-        linear-gradient(120deg, rgba(239,227,189,0.18), transparent);
+        linear-gradient(180deg, rgba(38,51,95,0.94), rgba(47,131,121,0.86)),
+        linear-gradient(120deg, rgba(239,227,189,0.22), transparent);
       color:var(--parchment);
       padding:24px 20px;
       display:flex;
@@ -47,11 +78,36 @@
       gap:20px;
       border-right:1px solid rgba(199,167,93,0.38);
       overflow-y:auto;
+      overscroll-behavior:contain;
+      scrollbar-gutter:stable;
+      scrollbar-width:thin;
+      scrollbar-color:transparent transparent;
+      box-shadow:20px 0 48px rgba(38,51,95,0.18);
+      backdrop-filter:blur(18px) saturate(1.08);
     }
-    .brand-block{display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid rgba(239,227,189,0.24)}
+    .sidebar:hover,
+    .sidebar:focus-within,
+    .sidebar.visible{scrollbar-color:rgba(239,227,189,0.62) rgba(255,250,240,0.06)}
+    .sidebar::-webkit-scrollbar{width:10px}
+    .sidebar::-webkit-scrollbar-track{background:transparent}
+    .sidebar::-webkit-scrollbar-thumb{
+      border:3px solid transparent;
+      border-radius:999px;
+      background-color:transparent;
+      background-clip:content-box;
+      transition:background-color 180ms ease;
+    }
+    .sidebar:hover::-webkit-scrollbar-thumb,
+    .sidebar:focus-within::-webkit-scrollbar-thumb,
+    .sidebar.visible::-webkit-scrollbar-thumb{background-color:rgba(239,227,189,0.62)}
+    .sidebar:hover::-webkit-scrollbar-track,
+    .sidebar:focus-within::-webkit-scrollbar-track,
+    .sidebar.visible::-webkit-scrollbar-track{background:rgba(255,250,240,0.04)}
+    .brand-block{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid rgba(239,227,189,0.24)}
+    .brand-copy{display:grid;gap:3px;min-width:0}
     .brand{font-weight:800;font-size:1.24rem;letter-spacing:0}
-    .brand-subtitle{font-size:0.82rem;color:rgba(255,250,240,0.78);margin-top:2px}
-    .site-logo{width:66px;height:66px;object-fit:contain;flex:0 0 66px}
+    .brand-tagline{font-size:0.78rem;line-height:1.35;color:rgba(255,250,240,0.76);font-weight:600}
+    .site-logo{width:66px;height:66px;object-fit:contain;flex:0 0 66px;filter:drop-shadow(0 12px 22px rgba(0,0,0,0.20))}
     .menu-close{display:none}
     nav{display:grid;gap:6px}
     nav a,
@@ -72,6 +128,7 @@
       text-align:left;
       width:100%;
       cursor:pointer;
+      transition:transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
     }
     nav a::before,
     .submenu-toggle::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--soft-gold);opacity:0.58}
@@ -79,6 +136,8 @@
     nav a:hover,
     .submenu-toggle:hover,
     .submenu-toggle.active-parent{background:rgba(255,250,240,0.12);border-color:rgba(239,227,189,0.28)}
+    nav a:hover,
+    .submenu-toggle:hover{transform:translateX(3px)}
     nav a.active::before,
     .submenu-toggle.active-parent::before{opacity:1;background:var(--aqua)}
     .nav-group{display:grid;gap:6px}
@@ -99,75 +158,163 @@
       margin-left:13px;
       padding:2px 0 2px 12px;
       border-left:1px solid rgba(239,227,189,0.26);
+      animation:submenuReveal 240ms ease both;
     }
     .nav-group.open .submenu{display:grid}
     .submenu a{font-size:0.84rem;padding:8px 9px;background:rgba(255,250,240,0.06)}
     .submenu a::before{width:6px;height:6px;flex-basis:6px}
 
-    .lang-switch{margin-top:auto;display:grid;grid-template-columns:repeat(5, minmax(0,1fr));gap:7px;background:rgba(255,250,240,0.10);padding:6px;border-radius:8px}
+    .lang-switch{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:3px;
+      padding:3px;
+      border-radius:999px;
+      border:1px solid rgba(199,167,93,0.32);
+      background:rgba(255,250,240,0.82);
+      box-shadow:0 12px 28px rgba(38,51,95,0.10), inset 0 1px 0 rgba(255,255,255,0.58);
+      backdrop-filter:blur(12px);
+      transition:transform 180ms ease, box-shadow 180ms ease;
+    }
+    .lang-switch:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(38,51,95,0.14), inset 0 1px 0 rgba(255,255,255,0.72)}
     .lang-switch button{
       min-width:0;
-      min-height:44px;
-      background:rgba(255,250,240,0.08);
-      border:1px solid rgba(239,227,189,0.22);
-      color:var(--parchment);
-      padding:6px 4px;
-      border-radius:6px;
+      min-height:32px;
+      background:transparent;
+      border:1px solid transparent;
+      color:var(--deep-indigo);
+      padding:5px 7px;
+      border-radius:999px;
       cursor:pointer;
-      font-weight:700;
-      display:grid;
-      place-items:center;
-      gap:2px;
-      box-shadow:inset 0 1px 0 rgba(255,250,240,0.10);
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      box-shadow:none;
+      transition:background 160ms ease, color 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
     }
-    .lang-switch button:hover{background:rgba(255,250,240,0.16)}
-    .lang-switch button.active{background:var(--soft-gold);color:var(--deep-indigo);border-color:var(--soft-gold)}
-    .flag-icon{width:28px;height:20px;border-radius:4px;display:block;border:1px solid rgba(255,250,240,0.58);box-shadow:0 2px 8px rgba(38,51,95,0.16);overflow:hidden}
-    .flag-en{background:
-      linear-gradient(90deg, transparent 42%, #ffffff 42%, #ffffff 58%, transparent 58%),
-      linear-gradient(0deg, transparent 42%, #ffffff 42%, #ffffff 58%, transparent 58%),
-      linear-gradient(90deg, transparent 47%, #d83b4a 47%, #d83b4a 53%, transparent 53%),
-      linear-gradient(0deg, transparent 47%, #d83b4a 47%, #d83b4a 53%, transparent 53%),
-      #274f9f}
+    .lang-switch button:hover{background:rgba(47,131,121,0.10);border-color:rgba(47,131,121,0.16)}
+    .lang-switch button.active{
+      background:linear-gradient(135deg, var(--deep-indigo), var(--jade));
+      color:var(--parchment);
+      border-color:rgba(255,250,240,0.36);
+      box-shadow:0 6px 14px rgba(38,51,95,0.18);
+    }
+    .flag-icon{width:20px;height:14px;border-radius:3px;display:block;border:1px solid rgba(38,51,95,0.16);box-shadow:0 2px 8px rgba(38,51,95,0.16);overflow:hidden;flex:0 0 auto}
+    .flag-en{
+      position:relative;
+      background:repeating-linear-gradient(180deg, #b22234 0 7.7%, #ffffff 7.7% 15.4%);
+    }
+    .flag-en::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      width:9px;
+      height:8px;
+      background:#3c3b6e;
+    }
+    .flag-en::after{
+      content:"";
+      position:absolute;
+      left:1.5px;
+      top:1.5px;
+      width:1.2px;
+      height:1.2px;
+      border-radius:50%;
+      background:#ffffff;
+      box-shadow:
+        3px 0 #ffffff, 6px 0 #ffffff,
+        1.5px 2.2px #ffffff, 4.5px 2.2px #ffffff,
+        0 4.4px #ffffff, 3px 4.4px #ffffff, 6px 4.4px #ffffff;
+    }
     .flag-es{background:linear-gradient(180deg,#be2f3a 0 25%,#f3cf3e 25% 75%,#be2f3a 75% 100%)}
     .flag-fr{background:linear-gradient(90deg,#244b9b 0 33.33%,#ffffff 33.33% 66.66%,#d8464f 66.66% 100%)}
     .flag-pt{background:linear-gradient(90deg,#267a48 0 42%,#d74447 42% 100%);position:relative}
     .flag-pt::after{content:"";position:absolute;left:35%;top:50%;width:8px;height:8px;border-radius:50%;background:#f0c94a;transform:translate(-50%,-50%)}
     .flag-de{background:linear-gradient(180deg,#252b34 0 33.33%,#c53a42 33.33% 66.66%,#e8bf4f 66.66% 100%)}
-    .lang-code{font-size:0.62rem;letter-spacing:0.04em;line-height:1}
-    .sidebar-note{font-size:0.92rem;color:rgba(255,250,240,0.86);line-height:1.5;padding:12px;border:1px solid rgba(239,227,189,0.24);border-radius:8px;background:rgba(255,250,240,0.08)}
+    .lang-code{font-size:0.6rem;letter-spacing:0.04em;line-height:1}
 
     /* Content */
-    .content{flex:1;padding:30px;max-width:1180px;width:100%}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
-    .hamburger{display:none;background:var(--jade);color:var(--parchment);min-width:44px;min-height:44px;padding:9px 11px;border-radius:8px;border:none}
+    .content{flex:1;padding:30px;max-width:1180px;width:100%;position:relative}
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+      padding:8px 10px 8px 0;
+    }
+    .hamburger{display:none;background:rgba(47,131,121,0.94);color:var(--parchment);min-width:44px;min-height:44px;padding:9px 11px;border-radius:8px;border:none;box-shadow:0 14px 28px rgba(38,51,95,0.14)}
     .topline{font-weight:700;color:var(--deep-indigo)}
-    .subquote{color:var(--muted);font-size:0.92rem;margin-top:2px}
     .masthead{
-      margin-bottom:20px;
-      padding:18px 0 8px;
+      margin-bottom:22px;
+      padding:28px 0 18px;
       display:grid;
       grid-template-columns:minmax(0, 1fr) auto;
-      gap:18px;
+      gap:12px;
       align-items:end;
       border-bottom:1px solid rgba(199,167,93,0.42);
+      position:relative;
     }
-    .eyebrow{font-size:0.78rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--jade)}
-    .page-title{font-size:clamp(2rem, 5vw, 4.1rem);line-height:0.98;margin:4px 0;color:var(--deep-indigo);font-weight:850}
-    .quote{max-width:660px;color:var(--muted);line-height:1.55}
-    .header-copy{flex:1}
+    .masthead::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-1px;
+      width:min(220px, 42vw);
+      height:2px;
+      background:linear-gradient(90deg, var(--gold), rgba(145,207,196,0));
+      animation:lineTide 8s ease-in-out infinite alternate;
+    }
+    .page-title{
+      font-size:clamp(1.85rem, 3.45vw, 3rem);
+      line-height:1.08;
+      margin:6px 0 0;
+      color:var(--deep-indigo);
+      font-weight:850;
+      max-width:980px;
+      text-wrap:balance;
+      text-shadow:0 14px 38px rgba(255,250,240,0.54);
+    }
+    .header-copy{flex:1;min-width:0}
 
     .card{
-      background:rgba(255,250,240,0.92);
+      background:
+        linear-gradient(135deg, rgba(255,250,240,0.90), rgba(237,247,244,0.72));
       border-radius:8px;
-      padding:26px;
-      border:1px solid rgba(223,213,181,0.94);
-      box-shadow:0 18px 46px rgba(38,51,95,0.10);
+      padding:30px;
+      border:1px solid rgba(255,250,240,0.76);
+      box-shadow:0 24px 70px rgba(38,51,95,0.13), inset 0 1px 0 rgba(255,255,255,0.62);
       max-width:1000px;
       width:100%;
+      backdrop-filter:blur(18px) saturate(1.08);
+      position:relative;
+      overflow:hidden;
+      animation:sectionReveal 520ms ease both;
     }
-    h1{margin:0 0 12px 0;font-size:1.72rem;color:var(--deep-indigo)}
-    p.lead{margin:0 0 14px 0;color:var(--text);opacity:0.9;line-height:1.7}
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(125deg, rgba(255,250,240,0.30), transparent 32%),
+        repeating-linear-gradient(90deg, rgba(199,167,93,0.08) 0, rgba(199,167,93,0.08) 1px, transparent 1px, transparent 34px);
+      opacity:0.56;
+    }
+    .card > *{position:relative}
+    h1{margin:0 0 12px 0;font-size:1.72rem;color:var(--deep-indigo);text-wrap:balance}
+    .home-quote{
+      margin:0 0 14px;
+      color:var(--deep-indigo);
+      font-size:1.05rem;
+      line-height:1.55;
+      font-style:italic;
+      opacity:0.82;
+    }
+    p.lead{margin:0 0 14px 0;color:var(--text);opacity:0.92;line-height:1.75}
     #salmosContent{line-height:1.65}
     #salmosContent h2{
       font-size:1.2rem;
@@ -185,9 +332,33 @@
     .section-copy{display:grid;gap:14px;color:#384461;line-height:1.7}
     .section-copy p{margin:0}
     .content-list{display:grid;gap:12px;margin-top:8px}
-    .content-list article{border-left:4px solid var(--gold);padding:10px 14px;background:rgba(237,247,244,0.56);border-radius:0 8px 8px 0}
+    .content-list article{
+      border-left:4px solid var(--gold);
+      padding:14px 16px;
+      background:rgba(237,247,244,0.58);
+      border-radius:0 8px 8px 0;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.38);
+      transition:transform 220ms ease, background 220ms ease, box-shadow 220ms ease;
+    }
+    .content-list article:hover{transform:translateY(-2px);background:rgba(255,250,240,0.62);box-shadow:0 16px 34px rgba(38,51,95,0.08)}
     .content-list h2{font-size:1.02rem;margin:0 0 5px;color:var(--deep-indigo)}
     .content-list p{margin:0;color:#384461;line-height:1.6}
+    .subsection-action{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-top:12px;
+      min-height:38px;
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid rgba(47,131,121,0.34);
+      background:rgba(47,131,121,0.10);
+      color:var(--deep-indigo);
+      font-weight:800;
+      text-decoration:none;
+    }
+    .subsection-action{transition:transform 180ms ease, background 180ms ease, box-shadow 180ms ease}
+    .subsection-action:hover{background:rgba(47,131,121,0.18);transform:translateY(-1px);box-shadow:0 12px 26px rgba(38,51,95,0.10)}
     .gallery-grid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:14px;margin-top:8px}
     .gallery-tile{aspect-ratio:4/3;border:1px solid rgba(199,167,93,0.42);border-radius:8px;background:linear-gradient(135deg, rgba(239,227,189,0.78), rgba(145,207,196,0.42));display:grid;place-items:center;color:var(--deep-indigo);font-weight:800;text-align:center;padding:12px}
 
@@ -195,31 +366,63 @@
     @media (max-width:900px){
       .app{flex-direction:column}
       .sidebar{display:none}
-      .sidebar.visible{display:flex;position:fixed;inset:0;width:100%;min-height:100vh;z-index:20;padding:18px;gap:14px}
+      .sidebar.visible{display:flex;position:fixed;inset:0;width:100%;height:100vh;height:100dvh;max-height:100dvh;z-index:20;padding:18px;gap:14px}
       .sidebar.visible nav{padding-bottom:12px}
       .menu-close{display:block;position:absolute;top:16px;right:16px;min-width:44px;min-height:44px;border:1px solid rgba(239,227,189,0.34);border-radius:8px;background:rgba(255,250,240,0.12);color:var(--parchment);font-weight:900}
       .hamburger{display:inline-block}
       .content{padding:16px}
-      header{position:sticky;top:0;z-index:10;margin:-16px -16px 16px;padding:12px 16px;background:rgba(247,241,223,0.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(199,167,93,0.28)}
+      header{position:sticky;top:0;z-index:10;margin:-16px -16px 16px;padding:12px 16px;background:rgba(247,241,223,0.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(199,167,93,0.28);gap:10px}
       .masthead{grid-template-columns:1fr}
       .gallery-grid{grid-template-columns:1fr}
       .card{padding:18px}
       h1{font-size:1.42rem}
-      .page-title{font-size:2rem}
-      .quote{font-size:0.95rem}
+      .page-title{font-size:1.85rem}
       nav a{min-height:42px}
-      .lang-switch{margin-top:0}
+      .lang-switch{padding:2px;gap:2px}
+      .lang-switch button{min-height:30px;padding:5px 6px}
+      .flag-icon{width:20px;height:14px}
+    }
+    @media (max-width:700px){
+      .lang-switch button{width:30px;padding:4px}
+      .lang-code{display:none}
     }
     @media (max-width:520px){
       .brand-block{gap:10px}
       .site-logo{width:54px;height:54px;flex-basis:54px}
       .brand{font-size:1.08rem}
-      .brand-subtitle{font-size:0.76rem}
+      .brand-tagline{font-size:0.74rem}
       .masthead{padding-top:8px}
+      .page-title{font-size:1.72rem}
       .content-list article{padding:10px 12px}
+      .lang-switch{margin-left:auto}
     }
 
     /* Small tweaks */
+    @keyframes forestBreath{
+      0%{transform:scale(1.04) translate3d(0,0,0);filter:saturate(0.78) contrast(0.90)}
+      100%{transform:scale(1.08) translate3d(-1.6vw,-1vh,0);filter:saturate(0.92) contrast(0.96)}
+    }
+    @keyframes mistCurrent{
+      0%{background-position:0 0, 0 0}
+      100%{background-position:0 0, 72px 0}
+    }
+    @keyframes sectionReveal{
+      0%{opacity:0;transform:translateY(14px) scale(0.992);filter:blur(3px)}
+      100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+    }
+    @keyframes submenuReveal{
+      0%{opacity:0;transform:translateY(-4px)}
+      100%{opacity:1;transform:translateY(0)}
+    }
+    @keyframes lineTide{
+      0%{width:min(160px, 36vw);opacity:0.58}
+      100%{width:min(300px, 58vw);opacity:1}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *, *::before, *::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
+    }
+
     footer{margin-top:18px;color:rgba(39,50,79,0.62);font-size:0.9rem}
   </style>
 </head>
@@ -229,19 +432,18 @@
       <button class="menu-close" id="closeMenu" type="button" aria-label="Close menu">×</button>
       <div class="brand-block">
         <img class="site-logo" src="logoGnosis.png" alt="Gnosis logo" />
-        <div>
+        <div class="brand-copy">
           <div class="brand" data-i18n="brand">Gnosis</div>
-          <div class="brand-subtitle" data-i18n="page_name">Salmos</div>
+          <div class="brand-tagline" data-i18n="short_desc">The truth dwells within you</div>
         </div>
       </div>
       <nav>
         <a href="#" data-section="home" class="active" data-i18n="home">Home</a>
         <a href="#" data-section="intro" data-i18n="intro_nav">Introducción al Cristianismo Gnóstico y la Gnosis Samaeliana</a>
-        <a href="#" data-section="start-study" data-i18n="start_nav">Cómo empezar el estudio Gnóstico</a>
-        <div class="nav-group" data-nav-group="salmos">
-          <button class="submenu-toggle" type="button" aria-expanded="false" data-i18n="salmos">Salmos</button>
+        <div class="nav-group" data-nav-group="start-study">
+          <button class="submenu-toggle" type="button" aria-expanded="false" data-section="start-study" data-i18n="start_nav">Cómo empezar el estudio Gnóstico</button>
           <div class="submenu">
-            <a href="#" data-section="psalm34-study" data-i18n="psalm34_title">Estudio Gnóstico del Salmo 34</a>
+            <a href="#" data-section="psalm34-study" data-i18n="salmos">Salmos</a>
           </div>
         </div>
         <a href="#" data-section="master-books" data-i18n="master_books_nav">Libros del Maestro Samael Aun Weor</a>
@@ -252,17 +454,6 @@
         <a href="#" data-section="info-contact" data-i18n="info_contact_nav">Información y contacto</a>
       </nav>
 
-      <div class="lang-switch" aria-label="Language switch">
-        <button class="active" data-lang="en" aria-label="English" title="English"><span class="flag-icon flag-en" aria-hidden="true"></span><span class="lang-code">EN</span></button>
-        <button data-lang="es" aria-label="Español" title="Español"><span class="flag-icon flag-es" aria-hidden="true"></span><span class="lang-code">ES</span></button>
-        <button data-lang="fr" aria-label="Français" title="Français"><span class="flag-icon flag-fr" aria-hidden="true"></span><span class="lang-code">FR</span></button>
-        <button data-lang="pt" aria-label="Português" title="Português"><span class="flag-icon flag-pt" aria-hidden="true"></span><span class="lang-code">PT</span></button>
-        <button data-lang="de" aria-label="Deutsch" title="Deutsch"><span class="flag-icon flag-de" aria-hidden="true"></span><span class="lang-code">DE</span></button>
-      </div>
-
-      <div class="sidebar-note">
-        <div data-i18n="short_desc">The truth dwells within you</div>
-      </div>
     </aside>
 
     <main class="content">
@@ -270,28 +461,33 @@
         <button class="hamburger" id="hambBtn">☰</button>
         <div class="header-copy">
           <div class="topline"><span data-i18n="brand">Gnosis</span> | <small id="currentViewName" data-i18n="home">Inicio</small></div>
-          <div class="subquote" data-i18n="header_quote">“Conócete a ti mismo y conocerás el universo y a los dioses.”</div>
+        </div>
+        <div class="lang-switch" aria-label="Language switch">
+          <button class="active" data-lang="en" aria-label="English" title="English"><span class="flag-icon flag-en" aria-hidden="true"></span><span class="lang-code">EN</span></button>
+          <button data-lang="es" aria-label="Español" title="Español"><span class="flag-icon flag-es" aria-hidden="true"></span><span class="lang-code">ES</span></button>
+          <button data-lang="fr" aria-label="Français" title="Français"><span class="flag-icon flag-fr" aria-hidden="true"></span><span class="lang-code">FR</span></button>
+          <button data-lang="pt" aria-label="Português" title="Português"><span class="flag-icon flag-pt" aria-hidden="true"></span><span class="lang-code">PT</span></button>
+          <button data-lang="de" aria-label="Deutsch" title="Deutsch"><span class="flag-icon flag-de" aria-hidden="true"></span><span class="lang-code">DE</span></button>
         </div>
       </header>
 
       <section class="masthead" aria-label="presentation">
         <div>
-          <div class="eyebrow" data-i18n="short_desc">The truth dwells within you</div>
-          <div class="page-title" data-i18n="masthead_title">Psalms for inner work</div>
-          <div class="quote" data-i18n="masthead_text">A contemplative reading space inspired by Christian Gnostic study, remembrance, and conscious transformation.</div>
+        <div class="page-title" data-i18n="masthead_title">Gnosis in quiet motion</div>
         </div>
       </section>
 
       <section id="home" class="card section" aria-label="home">
         <h1 data-i18n="home_title">Welcome</h1>
-        <p class="lead" data-i18n="home_desc">This is a small spiritual/gnosis template. Use the menu to open the Salmos section.</p>
+        <p class="home-quote" data-i18n="home_quote">“Know yourself and you will know the universe and the gods.”</p>
+        <p class="lead" data-i18n="home_desc">A contemplative portal for Christian Gnosis, arranged as a calm route of reading, remembrance, and inner refinement.</p>
       </section>
 
       <section id="intro" class="card section" style="display:none;margin-top:18px;" aria-label="introduction">
         <h1 data-i18n="intro_title">Introducción al Cristianismo Gnóstico y la Gnosis Samaeliana</h1>
         <div class="section-copy">
-          <p data-i18n="intro_p1">Esta sección presenta una visión inicial del Cristianismo Gnóstico y de la Gnosis Samaeliana como camino de autoconocimiento, transformación interior y vivencia consciente de lo espiritual.</p>
-          <p data-i18n="intro_p2">Puedes usar este espacio para explicar los principios, objetivos y contexto histórico del estudio gnóstico.</p>
+          <p data-i18n="intro_p1">Esta sección propone una aproximación serena al Cristianismo Gnóstico y a la Gnosis Samaeliana como vía de autoconocimiento, depuración interior y experiencia consciente de lo sagrado.</p>
+          <p data-i18n="intro_p2">Aquí se articulan principios, símbolos y contexto para que el estudio no sea solo lectura, sino una práctica viva de discernimiento.</p>
         </div>
       </section>
 
@@ -300,15 +496,20 @@
         <div class="content-list">
           <article>
             <h2 data-i18n="start_step1_title">1. Lectura ordenada</h2>
-            <p data-i18n="start_step1_text">Comienza con textos introductorios y toma notas de las ideas que despiertan comprensión práctica.</p>
+            <p data-i18n="start_step1_text">Avanza desde textos introductorios hacia obras de mayor hondura, conservando notas breves de aquello que ilumina la vida práctica.</p>
           </article>
           <article>
             <h2 data-i18n="start_step2_title">2. Autoobservación</h2>
-            <p data-i18n="start_step2_text">Relaciona el estudio con la vida diaria, observando pensamientos, emociones, palabras y acciones.</p>
+            <p data-i18n="start_step2_text">Lleva cada idea al laboratorio cotidiano: pensamientos, emociones, palabra y acción se convierten en materia de observación consciente.</p>
           </article>
           <article>
             <h2 data-i18n="start_step3_title">3. Constancia</h2>
-            <p data-i18n="start_step3_text">Reserva un momento del día para lectura, reflexión y práctica consciente.</p>
+            <p data-i18n="start_step3_text">Reserva un tiempo sobrio y constante para leer, meditar y permitir que la comprensión madure sin prisa.</p>
+          </article>
+          <article>
+            <h2 data-i18n="psalms_subsection_title">Salmos</h2>
+            <p data-i18n="psalms_subsection_text">Explora los Salmos como lenguaje simbólico del alma: súplica, alabanza, combate interior y reconciliación con lo divino.</p>
+            <a class="subsection-action" href="#" data-section-link="psalm34-study" data-i18n="open_psalm34">Estudio Gnóstico del Salmo 34</a>
           </article>
         </div>
       </section>
@@ -360,9 +561,9 @@
       <section id="gallery" class="card section" style="display:none;margin-top:18px;" aria-label="photo gallery">
         <h1 data-i18n="gallery_title">Galería de fotos</h1>
         <div class="gallery-grid">
-          <div class="gallery-tile" data-i18n="gallery_tile1">Imagen 1</div>
-          <div class="gallery-tile" data-i18n="gallery_tile2">Imagen 2</div>
-          <div class="gallery-tile" data-i18n="gallery_tile3">Imagen 3</div>
+          <div class="gallery-tile" data-i18n="gallery_tile1">Contemplative image</div>
+          <div class="gallery-tile" data-i18n="gallery_tile2">Symbolic moment</div>
+          <div class="gallery-tile" data-i18n="gallery_tile3">Study atmosphere</div>
         </div>
       </section>
 
@@ -373,6 +574,7 @@
 
       <section id="psalm34-study" class="card section" style="display:none;margin-top:18px;" aria-label="psalm 34 study">
         <h1 data-i18n="psalm34_title">Estudio Gnóstico del Salmo 34</h1>
+        <a class="subsection-action" href="#" data-section-link="start-study" data-i18n="back_to_start">Volver a Cómo empezar</a>
         <div id="salmosContent" data-i18n="salmos_content">Loading psalms...</div>
       </section>
 
@@ -400,49 +602,49 @@
       info_contact_nav: 'Information and contact',
       short_desc: 'The truth dwells within you',
       home_title: 'Welcome',
-      home_desc: 'On this page, you will find Christian Gnostic content aimed at providing humanity with tools for the awakening and remembrance of the soul.',
-      header_quote: '“Know yourself and you will know the universe and the gods.”',
-      masthead_title: 'Gnostic study and Psalms',
+      home_desc: 'A contemplative portal for Christian Gnosis, arranged as a calm route of reading, remembrance, and inner refinement.',
+      home_quote: '“Know yourself and you will know the universe and the gods.”',
+      masthead_title: 'Gnosis in quiet motion',
       masthead_text: 'A contemplative space for Christian Gnostic study, remembrance, reflection, and conscious transformation.',
       intro_title: 'Introduction to Gnostic Christianity and Samaelian Gnosis',
-      intro_p1: 'This section presents an initial view of Gnostic Christianity and Samaelian Gnosis as a path of self-knowledge, inner transformation, and conscious spiritual experience.',
-      intro_p2: 'Use this space to explain the principles, objectives, and historical context of Gnostic study.',
+      intro_p1: 'This section offers a serene approach to Gnostic Christianity and Samaelian Gnosis as a path of self-knowledge, inner purification, and conscious experience of the sacred.',
+      intro_p2: 'Here, principles, symbols, and context are gathered so study becomes more than reading: a living exercise in discernment.',
       start_title: 'How to begin Gnostic study',
       start_step1_title: '1. Ordered reading',
-      start_step1_text: 'Begin with introductory texts and take notes on the ideas that awaken practical understanding.',
+      start_step1_text: 'Move from introductory texts toward deeper works, keeping brief notes on what brings practical clarity to daily life.',
       start_step2_title: '2. Self-observation',
-      start_step2_text: 'Connect study with daily life by observing thoughts, emotions, words, and actions.',
+      start_step2_text: 'Bring each idea into the laboratory of daily life: thought, emotion, word, and action become material for conscious observation.',
       start_step3_title: '3. Constancy',
-      start_step3_text: 'Reserve a moment each day for reading, reflection, and conscious practice.',
+      start_step3_text: 'Reserve a sober, steady moment for reading, meditation, and the gradual maturation of understanding.',
       psalms_subsection_title: 'Psalms',
-      psalms_subsection_text: 'Begin here the Gnostic study of the Psalms as a practice of inner reflection.',
+      psalms_subsection_text: 'Explore the Psalms as symbolic language of the soul: supplication, praise, inner struggle, and reconciliation with the divine.',
       open_psalm34: 'Gnostic Study of Psalm 34',
       back_to_start: 'Back to how to begin',
       psalm34_title: 'Gnostic Study of Psalm 34',
       master_books_title: 'Books by Master Samael Aun Weor',
       master_book1_title: 'Main library',
-      master_book1_text: 'Add here a list of works by Master Samael Aun Weor, with links or brief descriptions.',
+      master_book1_text: 'Curate the principal works of Master Samael Aun Weor with clear notes, links, and a reading intention for each title.',
       master_book2_title: 'Suggested order',
-      master_book2_text: 'You can organize the books by study level, topic, or reading path.',
+      master_book2_text: 'Organize the route by maturity of study, thematic axis, or progressive itinerary of inner work.',
       master_lectures_title: 'Lectures by Master Samael Aun Weor',
-      master_lectures_p1: 'This space can gather lectures, transcripts, audio, or study links.',
-      master_lectures_p2: 'The purpose is to support reflective and ordered listening to the teachings.',
+      master_lectures_p1: 'Gather lectures, transcripts, audio, and study links in a sequence that invites attentive listening.',
+      master_lectures_p2: 'The purpose is to transform each teaching into a quiet point of reflection rather than a simple archive.',
       daily_reflection_title: 'Reflection of the day',
       daily_reflection_quote: '“The truth dwells within you.”',
-      daily_reflection_text: 'Use this view to publish a daily reflection, a brief practice, or a self-observation question.',
+      daily_reflection_text: 'Use this view for a daily meditation, a concise practice, or a question that refines self-observation.',
       recommended_books_title: 'Books recommended by Master Samael Aun Weor',
       recommended_books_item1_title: 'Complementary readings',
-      recommended_books_item1_text: 'Include here recommended works to expand spiritual, philosophical, and symbolic study.',
+      recommended_books_item1_text: 'Include works that broaden the spiritual, philosophical, and symbolic horizon of the Gnostic path.',
       recommended_books_item2_title: 'Study notes',
-      recommended_books_item2_text: 'Add comments about why each book helps the Gnostic path.',
+      recommended_books_item2_text: 'Add brief study notes explaining how each book nourishes discernment, practice, or symbolic understanding.',
       gallery_title: 'Photo gallery',
-      gallery_tile1: 'Image 1',
-      gallery_tile2: 'Image 2',
-      gallery_tile3: 'Image 3',
+      gallery_tile1: 'Contemplative image',
+      gallery_tile2: 'Symbolic moment',
+      gallery_tile3: 'Study atmosphere',
       salmos_title: 'Psalms',
       salmos_content: 'Here will go the Salmos content. Replace this text with the real salmos in the language you prefer.',
       info_contact_title: 'Information and contact',
-      contact_text: 'Contact section placeholder. Add your details here.',
+      contact_text: 'Add meeting details, study schedules, or contact channels for those who want to continue the work with guidance.',
       local_file_notice: 'The browser blocked direct local-file reading. Showing the .txt file as a fallback; to see formatted content, open the page from a local server or GitHub Pages.'
     },
     es: {
@@ -460,49 +662,49 @@
       info_contact_nav: 'Información y contacto',
       short_desc: 'La verdad habita en tu interior',
       home_title: 'Bienvenido',
-      home_desc: 'En esta página encontrarás contenido gnóstico cristiano que pretende brindar a la humanidad herramientas para el despertar de su consciencia.',
-      header_quote: '“Conócete a ti mismo y conocerás el universo y a los dioses.”',
-      masthead_title: 'Estudio gnóstico y Salmos',
+      home_desc: 'Un portal contemplativo para la Gnosis cristiana, dispuesto como una ruta serena de lectura, recuerdo y refinamiento interior.',
+      home_quote: '“Conócete a ti mismo y conocerás el universo y a los dioses.”',
+      masthead_title: 'Gnosis en movimiento sereno',
       masthead_text: 'Un espacio contemplativo para el estudio gnóstico cristiano, el recuerdo, la reflexión y la transformación consciente.',
       intro_title: 'Introducción al Cristianismo Gnóstico y la Gnosis Samaeliana',
-      intro_p1: 'Esta sección presenta una visión inicial del Cristianismo Gnóstico y de la Gnosis Samaeliana como camino de autoconocimiento, transformación interior y vivencia consciente de lo espiritual.',
-      intro_p2: 'Puedes usar este espacio para explicar los principios, objetivos y contexto histórico del estudio gnóstico.',
+      intro_p1: 'Esta sección propone una aproximación serena al Cristianismo Gnóstico y a la Gnosis Samaeliana como vía de autoconocimiento, depuración interior y experiencia consciente de lo sagrado.',
+      intro_p2: 'Aquí se articulan principios, símbolos y contexto para que el estudio no sea solo lectura, sino una práctica viva de discernimiento.',
       start_title: 'Cómo empezar el estudio Gnóstico',
       start_step1_title: '1. Lectura ordenada',
-      start_step1_text: 'Comienza con textos introductorios y toma notas de las ideas que despiertan comprensión práctica.',
+      start_step1_text: 'Avanza desde textos introductorios hacia obras de mayor hondura, conservando notas breves de aquello que ilumina la vida práctica.',
       start_step2_title: '2. Autoobservación',
-      start_step2_text: 'Relaciona el estudio con la vida diaria, observando pensamientos, emociones, palabras y acciones.',
+      start_step2_text: 'Lleva cada idea al laboratorio cotidiano: pensamientos, emociones, palabra y acción se convierten en materia de observación consciente.',
       start_step3_title: '3. Constancia',
-      start_step3_text: 'Reserva un momento del día para lectura, reflexión y práctica consciente.',
+      start_step3_text: 'Reserva un tiempo sobrio y constante para leer, meditar y permitir que la comprensión madure sin prisa.',
       psalms_subsection_title: 'Salmos',
-      psalms_subsection_text: 'Inicia aquí el estudio gnóstico de los Salmos como práctica de reflexión interior.',
+      psalms_subsection_text: 'Explora los Salmos como lenguaje simbólico del alma: súplica, alabanza, combate interior y reconciliación con lo divino.',
       open_psalm34: 'Estudio Gnóstico del Salmo 34',
       back_to_start: 'Volver a Cómo empezar',
       psalm34_title: 'Estudio Gnóstico del Salmo 34',
       master_books_title: 'Libros del Maestro Samael Aun Weor',
       master_book1_title: 'Biblioteca principal',
-      master_book1_text: 'Agrega aquí una lista de obras del Maestro Samael Aun Weor, con enlaces o descripciones breves.',
+      master_book1_text: 'Organiza aquí las obras principales del Maestro Samael Aun Weor con notas claras, enlaces y una intención de lectura para cada título.',
       master_book2_title: 'Orden sugerido',
-      master_book2_text: 'Puedes organizar los libros por nivel de estudio, tema o ruta de lectura.',
+      master_book2_text: 'Ordena la ruta por madurez de estudio, eje temático o itinerario progresivo de trabajo interior.',
       master_lectures_title: 'Conferencias del Maestro Samael Aun Weor',
-      master_lectures_p1: 'Este espacio puede reunir conferencias, transcripciones, audios o enlaces de estudio.',
-      master_lectures_p2: 'La idea es facilitar una escucha reflexiva y ordenada de las enseñanzas.',
+      master_lectures_p1: 'Reúne conferencias, transcripciones, audios y enlaces de estudio en una secuencia que invite a la escucha atenta.',
+      master_lectures_p2: 'El propósito es convertir cada enseñanza en un punto de reflexión silenciosa, no en un simple archivo.',
       daily_reflection_title: 'Reflexión del día',
       daily_reflection_quote: '“La verdad habita en tu interior.”',
-      daily_reflection_text: 'Usa esta vista para publicar una reflexión diaria, una práctica breve o una pregunta de autoobservación.',
+      daily_reflection_text: 'Usa esta vista para una meditación diaria, una práctica concisa o una pregunta que afine la autoobservación.',
       recommended_books_title: 'Libros recomendados por el Maestro Samael Aun Weor',
       recommended_books_item1_title: 'Lecturas complementarias',
-      recommended_books_item1_text: 'Aquí puedes incluir obras recomendadas para ampliar el estudio espiritual, filosófico y simbólico.',
+      recommended_books_item1_text: 'Incluye obras que ensanchen el horizonte espiritual, filosófico y simbólico del camino gnóstico.',
       recommended_books_item2_title: 'Notas de estudio',
-      recommended_books_item2_text: 'Añade comentarios sobre por qué cada libro ayuda al camino gnóstico.',
+      recommended_books_item2_text: 'Añade notas breves sobre cómo cada libro nutre el discernimiento, la práctica o la comprensión simbólica.',
       gallery_title: 'Galería de fotos',
-      gallery_tile1: 'Imagen 1',
-      gallery_tile2: 'Imagen 2',
-      gallery_tile3: 'Imagen 3',
+      gallery_tile1: 'Imagen contemplativa',
+      gallery_tile2: 'Momento simbólico',
+      gallery_tile3: 'Atmósfera de estudio',
       salmos_title: 'Salmos',
       salmos_content: 'Aquí irá el contenido de los Salmos. Reemplaza este texto con los salmos reales en el idioma que prefieras.',
       info_contact_title: 'Información y contacto',
-      contact_text: 'Sección de contacto. Agrega tu información aquí.',
+      contact_text: 'Agrega encuentros, horarios de estudio o canales de contacto para quienes deseen continuar el trabajo con orientación.',
       local_file_notice: 'El navegador bloqueó la lectura directa del archivo local. Se muestra el archivo .txt como respaldo; para verlo formateado, abre la página desde un servidor local o desde GitHub Pages.'
     },
     fr: {
@@ -520,49 +722,49 @@
       info_contact_nav: 'Informations et contact',
       short_desc: 'La vérité habite en toi',
       home_title: 'Bienvenue',
-      home_desc: 'Sur cette page, vous trouverez du contenu gnostique chrétien destiné à offrir à l’humanité des outils pour l’éveil de la conscience.',
-      header_quote: '« Connais-toi toi-même et tu connaîtras l’univers et les dieux. »',
-      masthead_title: 'Étude gnostique et Psaumes',
+      home_desc: 'Un portail contemplatif pour la Gnose chrétienne, conçu comme un parcours paisible de lecture, de souvenir et d’affinement intérieur.',
+      home_quote: '« Connais-toi toi-même et tu connaîtras l’univers et les dieux. »',
+      masthead_title: 'Gnose en mouvement paisible',
       masthead_text: 'Un espace contemplatif pour l’étude gnostique chrétienne, le souvenir, la réflexion et la transformation consciente.',
       intro_title: 'Introduction au Christianisme gnostique et à la Gnose samaélienne',
-      intro_p1: 'Cette section présente une première vision du Christianisme gnostique et de la Gnose samaélienne comme chemin de connaissance de soi, de transformation intérieure et d’expérience spirituelle consciente.',
-      intro_p2: 'Vous pouvez utiliser cet espace pour expliquer les principes, les objectifs et le contexte historique de l’étude gnostique.',
+      intro_p1: 'Cette section propose une approche sereine du Christianisme gnostique et de la Gnose samaélienne comme voie de connaissance de soi, de purification intérieure et d’expérience consciente du sacré.',
+      intro_p2: 'Principes, symboles et contexte y sont rassemblés afin que l’étude devienne plus qu’une lecture: un exercice vivant de discernement.',
       start_title: 'Comment commencer l’étude gnostique',
       start_step1_title: '1. Lecture ordonnée',
-      start_step1_text: 'Commencez par des textes introductifs et prenez note des idées qui éveillent une compréhension pratique.',
+      start_step1_text: 'Avancez des textes introductifs vers des œuvres plus profondes, en gardant des notes brèves sur ce qui éclaire la vie pratique.',
       start_step2_title: '2. Auto-observation',
-      start_step2_text: 'Reliez l’étude à la vie quotidienne en observant pensées, émotions, paroles et actions.',
+      start_step2_text: 'Portez chaque idée dans le laboratoire quotidien: pensée, émotion, parole et action deviennent matière d’observation consciente.',
       start_step3_title: '3. Constance',
-      start_step3_text: 'Réservez chaque jour un moment pour la lecture, la réflexion et la pratique consciente.',
+      start_step3_text: 'Réservez un moment sobre et constant pour lire, méditer et laisser la compréhension mûrir sans hâte.',
       psalms_subsection_title: 'Psaumes',
-      psalms_subsection_text: 'Commencez ici l’étude gnostique des Psaumes comme pratique de réflexion intérieure.',
+      psalms_subsection_text: 'Explorez les Psaumes comme langage symbolique de l’âme: supplication, louange, combat intérieur et réconciliation avec le divin.',
       open_psalm34: 'Étude gnostique du Psaume 34',
       back_to_start: 'Retour à comment commencer',
       psalm34_title: 'Étude gnostique du Psaume 34',
       master_books_title: 'Livres du Maître Samael Aun Weor',
       master_book1_title: 'Bibliothèque principale',
-      master_book1_text: 'Ajoutez ici une liste d’œuvres du Maître Samael Aun Weor, avec des liens ou de brèves descriptions.',
+      master_book1_text: 'Rassemblez les œuvres principales du Maître Samael Aun Weor avec des notes claires, des liens et une intention de lecture pour chaque titre.',
       master_book2_title: 'Ordre suggéré',
-      master_book2_text: 'Vous pouvez organiser les livres par niveau d’étude, thème ou parcours de lecture.',
+      master_book2_text: 'Organisez le parcours par maturité d’étude, axe thématique ou itinéraire progressif de travail intérieur.',
       master_lectures_title: 'Conférences du Maître Samael Aun Weor',
-      master_lectures_p1: 'Cet espace peut réunir des conférences, transcriptions, audios ou liens d’étude.',
-      master_lectures_p2: 'Le but est de faciliter une écoute réfléchie et ordonnée des enseignements.',
+      master_lectures_p1: 'Réunissez conférences, transcriptions, audios et liens d’étude dans une séquence propice à l’écoute attentive.',
+      master_lectures_p2: 'Le but est de transformer chaque enseignement en point de réflexion silencieuse plutôt qu’en simple archive.',
       daily_reflection_title: 'Réflexion du jour',
       daily_reflection_quote: '« La vérité habite en toi. »',
-      daily_reflection_text: 'Utilisez cette vue pour publier une réflexion quotidienne, une courte pratique ou une question d’auto-observation.',
+      daily_reflection_text: 'Utilisez cette vue pour une méditation quotidienne, une pratique concise ou une question qui affine l’auto-observation.',
       recommended_books_title: 'Livres recommandés par le Maître Samael Aun Weor',
       recommended_books_item1_title: 'Lectures complémentaires',
-      recommended_books_item1_text: 'Incluez ici des œuvres recommandées pour approfondir l’étude spirituelle, philosophique et symbolique.',
+      recommended_books_item1_text: 'Incluez des œuvres qui élargissent l’horizon spirituel, philosophique et symbolique du chemin gnostique.',
       recommended_books_item2_title: 'Notes d’étude',
-      recommended_books_item2_text: 'Ajoutez des commentaires sur la manière dont chaque livre aide le chemin gnostique.',
+      recommended_books_item2_text: 'Ajoutez de brèves notes expliquant comment chaque livre nourrit le discernement, la pratique ou la compréhension symbolique.',
       gallery_title: 'Galerie de photos',
-      gallery_tile1: 'Image 1',
-      gallery_tile2: 'Image 2',
-      gallery_tile3: 'Image 3',
+      gallery_tile1: 'Image contemplative',
+      gallery_tile2: 'Moment symbolique',
+      gallery_tile3: 'Atmosphère d’étude',
       salmos_title: 'Psaumes',
       salmos_content: 'Le contenu des Psaumes apparaîtra ici.',
       info_contact_title: 'Informations et contact',
-      contact_text: 'Section de contact. Ajoutez vos informations ici.',
+      contact_text: 'Ajoutez les rencontres, horaires d’étude ou canaux de contact pour celles et ceux qui souhaitent continuer avec orientation.',
       local_file_notice: 'Le navigateur a bloqué la lecture directe du fichier local. Le fichier .txt est affiché comme solution de secours; pour voir le contenu formaté, ouvrez la page depuis un serveur local ou GitHub Pages.'
     },
     pt: {
@@ -580,49 +782,49 @@
       info_contact_nav: 'Informações e contato',
       short_desc: 'A verdade habita em teu interior',
       home_title: 'Bem-vindo',
-      home_desc: 'Nesta página, você encontrará conteúdo gnóstico cristão destinado a oferecer à humanidade ferramentas para o despertar da consciência.',
-      header_quote: '“Conhece-te a ti mesmo e conhecerás o universo e os deuses.”',
-      masthead_title: 'Estudo gnóstico e Salmos',
+      home_desc: 'Um portal contemplativo para a Gnose cristã, organizado como uma rota serena de leitura, recordação e refinamento interior.',
+      home_quote: '“Conhece-te a ti mesmo e conhecerás o universo e os deuses.”',
+      masthead_title: 'Gnose em movimento sereno',
       masthead_text: 'Um espaço contemplativo para o estudo gnóstico cristão, a recordação, a reflexão e a transformação consciente.',
       intro_title: 'Introdução ao Cristianismo Gnóstico e à Gnose Samaeliana',
-      intro_p1: 'Esta seção apresenta uma visão inicial do Cristianismo Gnóstico e da Gnose Samaeliana como caminho de autoconhecimento, transformação interior e vivência espiritual consciente.',
-      intro_p2: 'Você pode usar este espaço para explicar os princípios, objetivos e contexto histórico do estudo gnóstico.',
+      intro_p1: 'Esta seção propõe uma aproximação serena ao Cristianismo Gnóstico e à Gnose Samaeliana como via de autoconhecimento, depuração interior e experiência consciente do sagrado.',
+      intro_p2: 'Aqui se articulam princípios, símbolos e contexto para que o estudo seja mais que leitura: uma prática viva de discernimento.',
       start_title: 'Como começar o estudo Gnóstico',
       start_step1_title: '1. Leitura ordenada',
-      start_step1_text: 'Comece com textos introdutórios e anote as ideias que despertam compreensão prática.',
+      start_step1_text: 'Avance dos textos introdutórios para obras de maior profundidade, conservando notas breves sobre o que ilumina a vida prática.',
       start_step2_title: '2. Auto-observação',
-      start_step2_text: 'Relacione o estudo com a vida diária, observando pensamentos, emoções, palavras e ações.',
+      start_step2_text: 'Leve cada ideia ao laboratório cotidiano: pensamento, emoção, palavra e ação tornam-se matéria de observação consciente.',
       start_step3_title: '3. Constância',
-      start_step3_text: 'Reserve um momento do dia para leitura, reflexão e prática consciente.',
+      start_step3_text: 'Reserve um tempo sóbrio e constante para ler, meditar e permitir que a compreensão amadureça sem pressa.',
       psalms_subsection_title: 'Salmos',
-      psalms_subsection_text: 'Comece aqui o estudo gnóstico dos Salmos como prática de reflexão interior.',
+      psalms_subsection_text: 'Explore os Salmos como linguagem simbólica da alma: súplica, louvor, combate interior e reconciliação com o divino.',
       open_psalm34: 'Estudo Gnóstico do Salmo 34',
       back_to_start: 'Voltar a Como começar',
       psalm34_title: 'Estudo Gnóstico do Salmo 34',
       master_books_title: 'Livros do Mestre Samael Aun Weor',
       master_book1_title: 'Biblioteca principal',
-      master_book1_text: 'Adicione aqui uma lista de obras do Mestre Samael Aun Weor, com links ou breves descrições.',
+      master_book1_text: 'Organize aqui as obras principais do Mestre Samael Aun Weor com notas claras, links e uma intenção de leitura para cada título.',
       master_book2_title: 'Ordem sugerida',
-      master_book2_text: 'Você pode organizar os livros por nível de estudo, tema ou rota de leitura.',
+      master_book2_text: 'Ordene a rota por maturidade de estudo, eixo temático ou itinerário progressivo de trabalho interior.',
       master_lectures_title: 'Conferências do Mestre Samael Aun Weor',
-      master_lectures_p1: 'Este espaço pode reunir conferências, transcrições, áudios ou links de estudo.',
-      master_lectures_p2: 'A ideia é facilitar uma escuta reflexiva e ordenada dos ensinamentos.',
+      master_lectures_p1: 'Reúna conferências, transcrições, áudios e links de estudo em uma sequência que convide à escuta atenta.',
+      master_lectures_p2: 'O propósito é converter cada ensinamento em um ponto de reflexão silenciosa, não em um simples arquivo.',
       daily_reflection_title: 'Reflexão do dia',
       daily_reflection_quote: '“A verdade habita em teu interior.”',
-      daily_reflection_text: 'Use esta vista para publicar uma reflexão diária, uma prática breve ou uma pergunta de auto-observação.',
+      daily_reflection_text: 'Use esta vista para uma meditação diária, uma prática concisa ou uma pergunta que refine a auto-observação.',
       recommended_books_title: 'Livros recomendados pelo Mestre Samael Aun Weor',
       recommended_books_item1_title: 'Leituras complementares',
-      recommended_books_item1_text: 'Inclua aqui obras recomendadas para ampliar o estudo espiritual, filosófico e simbólico.',
+      recommended_books_item1_text: 'Inclua obras que ampliem o horizonte espiritual, filosófico e simbólico do caminho gnóstico.',
       recommended_books_item2_title: 'Notas de estudo',
-      recommended_books_item2_text: 'Adicione comentários sobre por que cada livro ajuda no caminho gnóstico.',
+      recommended_books_item2_text: 'Adicione notas breves sobre como cada livro nutre o discernimento, a prática ou a compreensão simbólica.',
       gallery_title: 'Galeria de fotos',
-      gallery_tile1: 'Imagem 1',
-      gallery_tile2: 'Imagem 2',
-      gallery_tile3: 'Imagem 3',
+      gallery_tile1: 'Imagem contemplativa',
+      gallery_tile2: 'Momento simbólico',
+      gallery_tile3: 'Atmosfera de estudo',
       salmos_title: 'Salmos',
       salmos_content: 'O conteúdo dos Salmos aparecerá aqui.',
       info_contact_title: 'Informações e contato',
-      contact_text: 'Seção de contato. Adicione suas informações aqui.',
+      contact_text: 'Adicione encontros, horários de estudo ou canais de contato para quem deseja continuar o trabalho com orientação.',
       local_file_notice: 'O navegador bloqueou a leitura direta do arquivo local. O arquivo .txt é mostrado como alternativa; para ver o conteúdo formatado, abra a página a partir de um servidor local ou do GitHub Pages.'
     },
     de: {
@@ -640,49 +842,49 @@
       info_contact_nav: 'Informationen und Kontakt',
       short_desc: 'Die Wahrheit wohnt in deinem Inneren',
       home_title: 'Willkommen',
-      home_desc: 'Auf dieser Seite finden Sie christlich-gnostische Inhalte, die der Menschheit Werkzeuge für das Erwachen des Bewusstseins geben möchten.',
-      header_quote: '„Erkenne dich selbst, und du wirst das Universum und die Götter erkennen.“',
-      masthead_title: 'Gnostisches Studium und Psalmen',
+      home_desc: 'Ein kontemplatives Portal für die christliche Gnosis, gestaltet als ruhiger Weg der Lektüre, Erinnerung und inneren Verfeinerung.',
+      home_quote: '„Erkenne dich selbst, und du wirst das Universum und die Götter erkennen.“',
+      masthead_title: 'Gnosis in ruhiger Bewegung',
       masthead_text: 'Ein kontemplativer Raum für christlich-gnostisches Studium, Erinnerung, Reflexion und bewusste Verwandlung.',
       intro_title: 'Einführung in das gnostische Christentum und die samaelianische Gnosis',
-      intro_p1: 'Dieser Abschnitt bietet einen ersten Blick auf das gnostische Christentum und die samaelianische Gnosis als Weg der Selbsterkenntnis, inneren Verwandlung und bewussten spirituellen Erfahrung.',
-      intro_p2: 'Nutzen Sie diesen Raum, um Prinzipien, Ziele und historischen Kontext des gnostischen Studiums zu erklären.',
+      intro_p1: 'Dieser Abschnitt eröffnet einen ruhigen Zugang zum gnostischen Christentum und zur samaelianischen Gnosis als Weg der Selbsterkenntnis, inneren Läuterung und bewussten Erfahrung des Heiligen.',
+      intro_p2: 'Hier werden Prinzipien, Symbole und Kontext zusammengeführt, damit Studium mehr wird als Lektüre: eine lebendige Übung der Unterscheidung.',
       start_title: 'Wie man mit dem gnostischen Studium beginnt',
       start_step1_title: '1. Geordnete Lektüre',
-      start_step1_text: 'Beginnen Sie mit einführenden Texten und notieren Sie Gedanken, die praktisches Verständnis wecken.',
+      start_step1_text: 'Gehen Sie von einführenden Texten zu tieferen Werken über und halten Sie kurz fest, was das praktische Leben erhellt.',
       start_step2_title: '2. Selbstbeobachtung',
-      start_step2_text: 'Verbinden Sie das Studium mit dem täglichen Leben, indem Sie Gedanken, Gefühle, Worte und Handlungen beobachten.',
+      start_step2_text: 'Tragen Sie jede Idee in das tägliche Labor: Gedanke, Gefühl, Wort und Handlung werden Stoff bewusster Beobachtung.',
       start_step3_title: '3. Beständigkeit',
-      start_step3_text: 'Reservieren Sie täglich einen Moment für Lektüre, Reflexion und bewusste Praxis.',
+      start_step3_text: 'Reservieren Sie eine schlichte, beständige Zeit zum Lesen, Meditieren und ruhigen Reifen der Einsicht.',
       psalms_subsection_title: 'Psalmen',
-      psalms_subsection_text: 'Beginnen Sie hier das gnostische Studium der Psalmen als Praxis innerer Reflexion.',
+      psalms_subsection_text: 'Erforschen Sie die Psalmen als symbolische Sprache der Seele: Bitte, Lobpreis, innerer Kampf und Versöhnung mit dem Göttlichen.',
       open_psalm34: 'Gnostisches Studium von Psalm 34',
       back_to_start: 'Zurück zum Studienbeginn',
       psalm34_title: 'Gnostisches Studium von Psalm 34',
       master_books_title: 'Bücher des Meisters Samael Aun Weor',
       master_book1_title: 'Hauptbibliothek',
-      master_book1_text: 'Fügen Sie hier eine Liste der Werke des Meisters Samael Aun Weor mit Links oder kurzen Beschreibungen hinzu.',
+      master_book1_text: 'Ordnen Sie hier die Hauptwerke des Meisters Samael Aun Weor mit klaren Notizen, Links und einer Leseabsicht für jeden Titel.',
       master_book2_title: 'Vorgeschlagene Reihenfolge',
-      master_book2_text: 'Sie können die Bücher nach Studienniveau, Thema oder Leseweg ordnen.',
+      master_book2_text: 'Gliedern Sie den Weg nach Studienreife, thematischer Achse oder fortschreitendem innerem Arbeitsweg.',
       master_lectures_title: 'Vorträge des Meisters Samael Aun Weor',
-      master_lectures_p1: 'Dieser Bereich kann Vorträge, Transkripte, Audios oder Studienlinks sammeln.',
-      master_lectures_p2: 'Ziel ist es, ein reflektiertes und geordnetes Hören der Lehren zu erleichtern.',
+      master_lectures_p1: 'Sammeln Sie Vorträge, Transkripte, Audios und Studienlinks in einer Folge, die aufmerksames Hören fördert.',
+      master_lectures_p2: 'Ziel ist es, jede Lehre zu einem stillen Punkt der Reflexion zu machen, nicht zu einem bloßen Archiv.',
       daily_reflection_title: 'Reflexion des Tages',
       daily_reflection_quote: '„Die Wahrheit wohnt in deinem Inneren.“',
-      daily_reflection_text: 'Nutzen Sie diese Ansicht, um eine tägliche Reflexion, eine kurze Übung oder eine Frage zur Selbstbeobachtung zu veröffentlichen.',
+      daily_reflection_text: 'Nutzen Sie diese Ansicht für eine tägliche Meditation, eine knappe Praxis oder eine Frage, die die Selbstbeobachtung verfeinert.',
       recommended_books_title: 'Vom Meister Samael Aun Weor empfohlene Bücher',
       recommended_books_item1_title: 'Ergänzende Lektüren',
-      recommended_books_item1_text: 'Fügen Sie hier empfohlene Werke hinzu, um das spirituelle, philosophische und symbolische Studium zu vertiefen.',
+      recommended_books_item1_text: 'Fügen Sie Werke hinzu, die den spirituellen, philosophischen und symbolischen Horizont des gnostischen Weges erweitern.',
       recommended_books_item2_title: 'Studiennotizen',
-      recommended_books_item2_text: 'Fügen Sie Kommentare hinzu, warum jedes Buch dem gnostischen Weg hilft.',
+      recommended_books_item2_text: 'Ergänzen Sie kurze Studiennotizen dazu, wie jedes Buch Unterscheidung, Praxis oder symbolisches Verständnis nährt.',
       gallery_title: 'Fotogalerie',
-      gallery_tile1: 'Bild 1',
-      gallery_tile2: 'Bild 2',
-      gallery_tile3: 'Bild 3',
+      gallery_tile1: 'Kontemplatives Bild',
+      gallery_tile2: 'Symbolischer Moment',
+      gallery_tile3: 'Studienatmosphäre',
       salmos_title: 'Psalmen',
       salmos_content: 'Der Inhalt der Psalmen erscheint hier.',
       info_contact_title: 'Informationen und Kontakt',
-      contact_text: 'Kontaktbereich. Fügen Sie hier Ihre Informationen hinzu.',
+      contact_text: 'Fügen Sie Treffen, Studienzeiten oder Kontaktkanäle hinzu, damit Interessierte die Arbeit mit Orientierung fortsetzen können.',
       local_file_notice: 'Der Browser hat das direkte Lesen der lokalen Datei blockiert. Die .txt-Datei wird als Ersatz angezeigt; um den formatierten Inhalt zu sehen, öffnen Sie die Seite über einen lokalen Server oder GitHub Pages.'
     }
   };
@@ -791,10 +993,10 @@
     sectionEl.style.display = 'block';
 
     const navSection = activeSection || section;
-    document.querySelectorAll('nav a').forEach(x=>{
+    document.querySelectorAll('nav a, .submenu-toggle[data-section]').forEach(x=>{
       x.classList.toggle('active', x.dataset.section === navSection);
     });
-    const navLink = document.querySelector(`nav a[data-section="${section}"]`) || document.querySelector(`nav a[data-section="${navSection}"]`);
+    const navLink = document.querySelector(`nav a[data-section="${section}"], .submenu-toggle[data-section="${section}"]`) || document.querySelector(`nav a[data-section="${navSection}"], .submenu-toggle[data-section="${navSection}"]`);
     document.querySelectorAll('.nav-group').forEach(group=>{
       const isActiveGroup = navLink ? group.contains(navLink) : false;
       const toggle = group.querySelector('.submenu-toggle');
@@ -816,8 +1018,28 @@
     button.addEventListener('click', ()=>{
       const group = button.closest('.nav-group');
       if(!group) return;
+      if(button.dataset.section){
+        const wasOpen = group.classList.contains('open');
+        showSection(button.dataset.section);
+        if(wasOpen){
+          group.classList.remove('open');
+          button.setAttribute('aria-expanded', 'false');
+        }
+        return;
+      }
       group.classList.toggle('open');
       button.setAttribute('aria-expanded', String(group.classList.contains('open')));
+    });
+  });
+
+  document.querySelectorAll('[data-section-link]').forEach(link=>{
+    link.addEventListener('click', e=>{
+      e.preventDefault();
+      showSection(link.dataset.sectionLink);
+      if(window.innerWidth<=900) {
+        document.getElementById('sidebar').classList.remove('visible');
+        document.body.classList.remove('menu-open');
+      }
     });
   });
 
